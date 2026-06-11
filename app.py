@@ -35,14 +35,14 @@ def load_data(file_bytes, file_name):
             return None
         return df
     except Exception as e:
-        st.error(import_error)
+        st.error(f"Lỗi nạp dữ liệu: {str(e)}")
         return None
 
 # ==========================================
 # 3. SIDEBAR - VÙNG CẤU HÌNH
 # ==========================================
 with st.sidebar:
-    st.header("⚙️ Cấu hình & Tải dữ liệu")
+    st.markdown('<h2 style="color: #D32F2F;"><b>⚙️ Cấu hình & Tải dữ liệu</b></h2>', unsafe_html=True)
     
     # Tải dữ liệu mẫu huấn luyện
     uploaded_file = st.file_uploader(
@@ -60,7 +60,7 @@ with st.sidebar:
         help="Chọn thuật toán để xây dựng mô hình phân loại giao dịch gian lận"
     )
     
-    st.subheader("Tham số mô hình AI")
+    st.markdown('<h3 style="color: #D32F2F;"><b>Tham số mô hình AI</b></h3>', unsafe_html=True)
     
     # Cấu hình tham số động theo mô hình được lựa chọn
     params = {}
@@ -93,7 +93,7 @@ with st.sidebar:
 # ==========================================
 # 4. HEADER - VÙNG ĐỊNH HƯỚNG
 # ==========================================
-st.title("🛡️ Hệ thống Phát hiện Giao dịch Gian lận")
+st.markdown('<h1 style="color: #D32F2F;"><b>🛡️ Hệ thống Phát hiện Giao dịch Gian lận</b></h1>', unsafe_html=True)
 st.caption("Ứng dụng phân tích rủi ro và nhận diện tự động các giao dịch bất thường dựa trên mô hình học máy Scikit-Learn.")
 
 if uploaded_file is None:
@@ -115,7 +115,7 @@ if missing_cols:
     st.error(f"❌ Thiếu các cột bắt buộc sau trong file dữ liệu: {', '.join(missing_cols)}")
     st.stop()
 
-st.caption(f"📁 Đang sử dụng tệp: **{uploaded_file.name}** | Quy mô: {df.shape[0]:,} dòng và {df.shape[1]} cột.")
+st.markdown(f"📁 Đang sử dụng tệp: <b style='color: #D32F2F;'>{uploaded_file.name}</b> | Quy mô: <b style='color: #D32F2F;'>{df.shape[0]:,}</b> dòng và <b style='color: #D32F2F;'>{df.shape[1]}</b> cột.", unsafe_html=True)
 st.divider()
 
 # ==========================================
@@ -185,7 +185,7 @@ if train_clicked:
         st.session_state['metrics'] = metrics_results
         st.session_state['model_name'] = model_option
         
-    st.success(f"🎉 Đã huấn luyện xong mô hình **{model_option}** thành công!")
+    st.success(f"🎉 Đã huấn luyện xong mô hình {model_option} thành công!")
 
 # ==========================================
 # 6. PHÂN VÙNG GIAO DIỆN - TABS CONTENT
@@ -199,7 +199,7 @@ tabs = st.tabs([
 
 # --- TAB 1: TỔNG QUAN DỮ LIỆU ---
 with tabs[0]:
-    st.subheader("Phân tích cấu trúc dữ liệu")
+    st.markdown('<h3 style="color: #D32F2F;"><b>Phân tích cấu trúc dữ liệu</b></h3>', unsafe_html=True)
     
     col_m1, col_m2, col_m3 = st.columns(3)
     with col_m1:
@@ -210,22 +210,25 @@ with tabs[0]:
         file_size_mb = len(file_bytes) / (1024 * 1024)
         st.metric("Dung lượng tệp tin", f"{file_size_mb:.2f} MB")
         
-    st.write("##### Xem trước 5 hàng dữ liệu đầu tiên")
+    st.markdown('<p style="color: #D32F2F; font-size: 18px;"><b>Xem trước 5 hàng dữ liệu đầu tiên</b></p>', unsafe_html=True)
     st.dataframe(df.head(), use_container_width=True)
     
-    st.write("##### Thống kê mô tả các đặc trưng toán học")
-    # Chỉ hiển thị mô tả cho các cột tính toán mô hình nhằm tránh thừa thông tin
-    st.dataframe(df[features + [target]].describe().T, use_container_width=True)
+    st.markdown('<p style="color: #D32F2F; font-size: 18px;"><b>Thống kê mô tả các đặc trưng toán học</b></p>', unsafe_html=True)
+    
+    # Định dạng style cho bảng dữ liệu: Tiêu đề in đậm và chữ màu đỏ
+    styled_desc = df[features + [target]].describe().T.style.set_table_styles([
+        {'selector': 'th', 'props': [('color', '#D32F2F'), ('font-weight', 'bold')]}
+    ])
+    st.dataframe(styled_desc, use_container_width=True)
 
 # --- TAB 2: TRỰC QUAN HÓA DỮ LIỆU ---
 with tabs[1]:
-    st.subheader("Phân tích phân phối và tương quan")
+    st.markdown('<h3 style="color: #D32F2F;"><b>Phân tích phân phối và tương quan</b></h3>', unsafe_html=True)
     
-    # Biến mục tiêu ưu tiên hàng đầu
     col_g1, col_g2 = st.columns(2)
     
     with col_g1:
-        st.write("**Phân phối của biến mục tiêu (default)**")
+        st.markdown('<p style="color: #D32F2F;"><b>Phân phối của biến mục tiêu (default)</b></p>', unsafe_html=True)
         target_counts = df[target].value_counts().reset_index()
         target_counts.columns = ['Trạng thái', 'Số lượng']
         target_counts['Trạng thái'] = target_counts['Trạng thái'].map({0: "0 (Bình thường)", 1: "1 (Gian lận)"})
@@ -235,7 +238,7 @@ with tabs[1]:
         st.plotly_chart(fig_target, use_container_width=True)
         
     with col_g2:
-        st.write("**Tỷ lệ phần trăm giao dịch gian lận**")
+        st.markdown('<p style="color: #D32F2F;"><b>Tỷ lệ phần trăm giao dịch gian lận</b></p>', unsafe_html=True)
         fig_pie = px.pie(target_counts, names='Trạng thái', values='Số lượng',
                          color='Trạng thái', color_discrete_map={"0 (Bình thường)": "#2ecc71", "1 (Gian lận)": "#e74c3c"},
                          hole=0.4, height=350)
@@ -243,8 +246,7 @@ with tabs[1]:
         
     st.divider()
     
-    # Lựa chọn hiển thị linh hoạt các đặc trưng X tự động
-    st.write("**Biểu đồ phân phối chi tiết các đặc trưng X**")
+    st.markdown('<p style="color: #D32F2F; font-size: 18px;"><b>Biểu đồ phân phối chi tiết các đặc trưng X</b></p>', unsafe_html=True)
     selected_features = st.multiselect(
         "Chọn các đặc trưng để xem phân phối:",
         options=features,
@@ -253,7 +255,6 @@ with tabs[1]:
     )
     
     if selected_features:
-        # Chia lưới hiển thị 2 cột cân đối
         cols_grid = st.columns(2)
         for idx, feat in enumerate(selected_features):
             col_target = cols_grid[idx % 2]
@@ -266,18 +267,17 @@ with tabs[1]:
     else:
         st.warning("Vui lòng chọn ít nhất một biến X để hiển thị biểu đồ phân phối.")
 
-# --- TAB 3: KẾT QUẢ HUÂN LUYỆN & KIỂM ĐỊNH ---
+# --- TAB 3: KẾT QUẢ HUẤN LUYỆN & KIỂM ĐỊNH ---
 with tabs[2]:
-    st.subheader("Đánh giá chất lượng mô hình phân loại")
+    st.markdown('<h3 style="color: #D32F2F;"><b>Đánh giá chất lượng mô hình phân loại</b></h3>', unsafe_html=True)
     
-    # Kiểm tra trạng thái huấn luyện từ session_state
     if 'trained_model' not in st.session_state:
-        st.info("💡 Chưa có mô hình nào được huấn luyện. Vui lòng bấm nút **'Huấn luyện mô hình'** tại thanh Sidebar bên trái.")
+        st.info("💡 Chưa có mô hình nào được huấn luyện. Vui lòng bấm nút 'Huấn luyện mô hình' tại thanh Sidebar bên trái.")
     else:
         metrics = st.session_state['metrics']
         model_name = st.session_state['model_name']
         
-        st.success(f"Mô hình đang hiển thị kết quả: **{model_name}**")
+        st.markdown(f"Mô hình đang hiển thị kết quả: <b style='color: #D32F2F;'>{model_name}</b>", unsafe_html=True)
         
         # Khối hiển thị chỉ số chính bằng Metric
         m_col1, m_col2, m_col3, m_col4 = st.columns(4)
@@ -295,40 +295,43 @@ with tabs[2]:
         col_res1, col_res2 = st.columns(2)
         
         with col_res1:
-            st.write("**Ma trận nhầm lẫn (Confusion Matrix):**")
+            st.markdown('<p style="color: #D32F2F;"><b>Ma trận nhầm lẫn (Confusion Matrix):</b></p>', unsafe_html=True)
             cm = metrics['cm']
-            # Vẽ ma trận nhầm lẫn trực quan bằng Plotly
             fig_cm = px.imshow(
                 cm, text_auto=True,
                 labels=dict(x="Nhãn Dự Đoán", y="Nhãn Thực Tế", color="Số lượng"),
                 x=['Bình thường (0)', 'Gian lận (1)'],
                 y=['Bình thường (0)', 'Gian lận (1)'],
-                color_continuous_scale='Blues',
+                color_continuous_scale='Reds', # Đổi màu heat map sang đỏ cho hợp tông
                 height=350
             )
             st.plotly_chart(fig_cm, use_container_width=True)
             
         with col_res2:
-            st.write("**Báo cáo phân loại chi tiết (Classification Report):**")
+            st.markdown('<p style="color: #D32F2F;"><b>Báo cáo phân loại chi tiết (Classification Report):</b></p>', unsafe_html=True)
             report_df = pd.DataFrame(metrics['report']).transpose()
-            st.dataframe(report_df.style.format(precision=4), use_container_width=True)
             
-        # Biểu đồ tầm quan trọng đặc trưng (Feature Importance) chỉ áp dụng cho cây
+            # Định dạng cột tiêu đề của bảng báo cáo kết quả chi tiết
+            styled_report = report_df.style.format(precision=4).set_table_styles([
+                {'selector': 'th', 'props': [('color', '#D32F2F'), ('font-weight', 'bold')]}
+            ])
+            st.dataframe(styled_report, use_container_width=True)
+            
         if model_name in ["Random Forest", "Decision Tree"]:
             st.divider()
-            st.write("**Độ quan trọng của các đặc trưng đầu vào (Feature Importance):**")
+            st.markdown('<p style="color: #D32F2F;"><b>Độ quan trọng của các đặc trưng đầu vào (Feature Importance):</b></p>', unsafe_html=True)
             importance = st.session_state['trained_model'].feature_importances_
             feat_imp_df = pd.DataFrame({'Đặc trưng': features, 'Độ quan trọng': importance})
             feat_imp_df = feat_imp_df.sort_values(by='Độ quan trọng', ascending=True)
             
             fig_imp = px.bar(feat_imp_df, x='Độ quan trọng', y='Đặc trưng', orientation='h',
                              title=f"Mức độ đóng góp quyết định của các đặc trưng - {model_name}",
-                             color='Độ quan trọng', color_continuous_scale='Viridis', height=400)
+                             color='Độ quan trọng', color_continuous_scale='Reds', height=400)
             st.plotly_chart(fig_imp, use_container_width=True)
 
 # --- TAB 4: SỬ DỤNG MÔ HÌNH (DỰ BÁO THỰC TẾ) ---
 with tabs[3]:
-    st.subheader("Dự báo thời gian thực & Chấm điểm dữ liệu")
+    st.markdown('<h3 style="color: #D32F2F;"><b>Dự báo thời gian thực & Chấm điểm dữ liệu</b></h3>', unsafe_html=True)
     
     if 'trained_model' not in st.session_state:
         st.info("💡 Chưa có mô hình trực tuyến. Vui lòng cấu hình và huấn luyện mô hình thành công trước khi dự báo.")
@@ -341,12 +344,10 @@ with tabs[3]:
         if mode == "Nhập thông số trực tiếp":
             st.write("👉 Vui lòng điền các giá trị thông số giao dịch để phân tích rủi ro:")
             
-            # Sử dụng st.form để gom cụm xử lý tránh hiện tượng tự động reload trang khi thay đổi thông số
             with st.form("single_prediction_form"):
                 form_cols = st.columns(4)
                 input_data = {}
                 
-                # Tạo widget động cho 14 biến dựa theo phân phối thực của tập dữ liệu gốc
                 for idx, feat in enumerate(features):
                     col_target = form_cols[idx % 4]
                     min_val = float(df[feat].min())
@@ -356,7 +357,7 @@ with tabs[3]:
                     with col_target:
                         input_data[feat] = st.number_input(
                             f"Giá trị {feat}",
-                            min_value=min_val * 2, # Mở rộng biên an toàn cho dữ liệu mới
+                            min_value=min_val * 2,
                             max_value=max_val * 2,
                             value=mean_val,
                             format="%.4f"
@@ -365,32 +366,25 @@ with tabs[3]:
                 submit_predict = st.form_submit_button("🛡️ Kiểm tra giao dịch", type="primary")
                 
             if submit_predict:
-                # Chuyển đổi dữ liệu input sang DataFrame
                 input_df = pd.DataFrame([input_data])
-                
-                # Áp dụng bộ tiền xử lý StandardScaler đã fit lúc huấn luyện
                 input_scaled = scaler.transform(input_df)
-                
-                # Thực hiện dự báo nhãn và xác suất rủi ro
                 pred_label = model.predict(input_scaled)[0]
                 
                 st.divider()
-                st.write("### Kết quả đánh giá từ hệ thống AI:")
+                st.markdown('<p style="color: #D32F2F; font-size: 18px;"><b>Kết quả đánh giá từ hệ thống AI:</b></p>', unsafe_html=True)
                 
                 if pred_label == 1:
                     st.error("🚨 **CẢNH BÁO: Giao dịch này có dấu hiệu GIAN LẬN nguy hiểm!**")
                 else:
                     st.success("✅ **AN TOÀN: Giao dịch được đánh giá là Bình thường.**")
                     
-                # Hiện xác suất dự báo nếu mô hình hỗ trợ
                 if hasattr(model, "predict_proba"):
                     pred_proba = model.predict_proba(input_scaled)[0]
                     col_p1, col_p2 = st.columns(2)
                     with col_p1:
                         st.metric("Xác suất an toàn (Bình thường)", f"{pred_proba[0]*100:.2f}%")
                     with col_p2:
-                        st.metric("Xác suất nguy cơ (Gian lận)", f"{pred_proba[1]*100:.2f}%", 
-                                  delta=f"{pred_proba[1]*100:.1f}%" if pred_proba[1] > 0.5 else None, delta_color="inverse")
+                        st.metric("Xác suất nguy cơ (Gian lận)", f"{pred_proba[1]*100:.2f}%")
                                   
         elif mode == "Tải file dữ liệu kiểm tra mới (Batch Prediction)":
             st.write("👉 Tải lên tệp chứa các đặc trưng từ `X_1` đến `X_14` (Không cần cột nhãn `default`) để chấm điểm hàng loạt.")
@@ -402,22 +396,15 @@ with tabs[3]:
                 new_df = load_data(new_bytes, new_file.name)
                 
                 if new_df is not None:
-                    # Kiểm tra sự đầy đủ của đặc trưng đầu vào
                     missing_batch_cols = [col for col in features if col not in new_df.columns]
                     
                     if missing_batch_cols:
                         st.error(f"❌ File tải lên thiếu các cột đặc trưng kỹ thuật sau: {', '.join(missing_batch_cols)}")
                     else:
-                        # Chỉ lấy đúng 14 cột phục vụ chạy mô hình
                         X_new = new_df[features]
-                        
-                        # Chuẩn hóa dữ liệu theo chuẩn cũ
                         X_new_scaled = scaler.transform(X_new)
-                        
-                        # Dự báo hàng loạt
                         predictions = model.predict(X_new_scaled)
                         
-                        # Tạo dataframe kết quả trả về cho khách hàng
                         result_df = new_df.copy()
                         result_df['Dự_Báo_Kết_Quả'] = predictions
                         result_df['Ý_Nghĩa'] = result_df['Dự_Báo_Kết_Quả'].map({0: "An toàn (Bình thường)", 1: "Nguy cơ (Gian lận)"})
@@ -427,17 +414,18 @@ with tabs[3]:
                             result_df['Xác_Suất_Gian_Lận'] = prob[:, 1]
                         
                         st.divider()
-                        st.write("### Kết quả dự báo hàng loạt")
+                        st.markdown('<p style="color: #D32F2F; font-size: 18px;"><b>Kết quả dự báo hàng loạt</b></p>', unsafe_html=True)
                         
-                        # Thống kê tổng quan số lượng rủi ro trong file mới
                         num_fraud = int((predictions == 1).sum())
                         total_rows = len(predictions)
                         st.warning(f"Hệ thống phát hiện **{num_fraud} / {total_rows}** giao dịch có dấu hiệu gian lận bất thường.")
                         
-                        # Hiển thị bảng dữ liệu kết quả đã xử lý
-                        st.dataframe(result_df, use_container_width=True)
+                        # Định dạng màu sắc tiêu đề bảng cho dữ liệu dự báo hàng loạt
+                        styled_result = result_df.style.set_table_styles([
+                            {'selector': 'th', 'props': [('color', '#D32F2F'), ('font-weight', 'bold')]}
+                        ])
+                        st.dataframe(styled_result, use_container_width=True)
                         
-                        # Xuất file kết quả dạng CSV sang bộ nhớ tạm để download
                         csv_buffer = io.StringIO()
                         result_df.to_csv(csv_buffer, index=False, encoding='utf-8-sig')
                         csv_data = csv_buffer.getvalue()
