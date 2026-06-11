@@ -16,8 +16,8 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # ==========================================
 st.set_page_config(
     layout="wide",
-    page_title="Hệ thống Phát hiện Gian lận Giao dịch",
-    page_icon="🛡️"
+    page_title="Hệ thống phát hiện gian lận tại Agribank",
+    page_icon="$$$"
 )
 
 # ==========================================
